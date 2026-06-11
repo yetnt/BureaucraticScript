@@ -1,0 +1,59 @@
+Documents Title: Code
+Version: 1
+Time: 12:04 AM
+Date: 11/06/2026
+Forms Amount: 9
+Author: yetnt
+Line Separator: CRLF
+
+Form Title: License
+License Type: Generic
+License Properties: No Distribution, No Rights Reserved, No Warranty
+License Year: 2026
+Renewal Year: 2028
+
+Form Title: Comment
+Form Body: This is how you make a comment
+    tab to next line it
+    and yeah this is a comment.
+    should deter form making comments.
+
+Form Title: Function Parameter Definition
+Parameter Name: First Number
+Expected Type: Integer
+Optional: False
+Default Value: N/A
+
+Form Title: Function Parameter Definition
+Parameter Name: Second Number
+Expected Type: Integer
+Optional: True
+Default Value: 0
+
+Form Title: Scope Registration Request
+Scoping Authority: Global
+Scope Author: yetnt
+Scope Integrity: N/A
+
+Form Title: Function Body Definition
+Form Body Return: (As Provided By Form 3) + (As Provided By Form 4)
+Scoping Body: Refer To Form 5
+
+Form Title: Symbol Addition Request
+Symbol Type: Function
+Symbol Name: Add Two Numbers
+Symbol Scope: Global
+Request Definition Body: Refer To Form 3, Refer To Form 4
+Request Body: Refer To Form 6
+Symbol Return Type: N/A
+
+Form Title: Function Call Request
+Function Name: Add Two Numbers
+Function Parameter 1: 10
+Function Parameter 2: 12
+Function Integrity: Returns Number
+
+Form Title: Function Call Request
+Function Name: Print
+Function Parameter 1: As Provided By Form 8
+Function Integrity: No Return
