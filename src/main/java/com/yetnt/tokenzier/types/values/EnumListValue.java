@@ -39,10 +39,6 @@ public class EnumListValue<T extends EnumValues> extends FormEntryValue<ArrayLis
     public EnumListValue(T enumValue) throws BureaucraticError {
         super(new ArrayList<>());
         this.enumValue = enumValue;
-//        String[] values = value.split(",");
-//        for (String val : values) {
-//            getValue().add(new EnumValue<>(val.trim(), (T) enumValue.getEnumValueFrom(val.trim())));
-//        }
     }
 
     public EnumListValue(ArrayList<EnumValue<T>> value, T enumValue) {

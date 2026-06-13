@@ -6,7 +6,7 @@ public class BureaucraticError extends Exception {
 
     public BureaucraticError(String message, int lineNumber) {
         super(
-                CCol.print(message, CCol.TEXT.RED, CCol.FONT.ITALIC) + " " +
+                CCol.print(message, CCol.TEXT.RED, CCol.FONT.ITALIC, CCol.TEXT.RED) + " " +
                         CCol.print("[On line " + lineNumber + "]", CCol.TEXT.YELLOW, CCol.FONT.BOLD)
         );
     }

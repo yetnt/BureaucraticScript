@@ -143,6 +143,7 @@ public class Form {
         ArrayList<Form> allForms = new ArrayList<>() ;
         allForms.add(new DocumentsHeader());
         allForms.add(new LicenseForm());
+        allForms.add(new TestingForm());
 
         for (Form form : allForms) {
             if (form.getTitle().equals(title)) {
@@ -255,4 +256,31 @@ public class Form {
         return enumListValueInstance.getValue();
     }
 
+    /**
+     * Retrieves the value of a {@link FormEntry} and casts it to the expected type, without strict type checking.
+     * This method is useful when the exact type of the value is not known at compile time, but it is known
+     * to implement a certain interface or be a subclass of a certain class.
+     * @param expected The expected class or interface type.
+     * @param entry The {@link FormEntry} to retrieve the value from.
+     * @return The value of the {@link FormEntry}, cast to {@link Object}.
+     * @throws BureaucraticError if the actual type of the entry's value does not match the expected type.
+     */
+    public Object getUntyped(Class<?> expected, FormEntry<?> entry) throws BureaucraticError {
+        String expectedFriendlyName = expected.getAnnotation(BureaucraticType.class).friendlyName();
+        String actualFriendlyName = entry.getValue().getClass().getAnnotation(BureaucraticType.class).friendlyName();
+
+        if (expected == Any.class) {
+            return entry.getValue();
+        }
+
+        if (!expected.isInstance(entry.getValue())) {
+            throw new BureaucraticError(
+                    entry.getKey() + " expects a " + expectedFriendlyName + " but instead got a "
+                            + actualFriendlyName,
+                    entry.getValue().getLineNumber()
+            );
+        }
+
+        return entry.getValue();
+    }
 }

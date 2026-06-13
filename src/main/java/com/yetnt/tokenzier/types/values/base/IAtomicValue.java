@@ -13,5 +13,6 @@ import com.yetnt.tokenzier.types.values.*;
  * @see AsProvidedByValue
  * @author Lehlogonolo Poole
  */
+@BureaucraticType(friendlyName = "[Atomic Value]")
 public interface IAtomicValue {
 }

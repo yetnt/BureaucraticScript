@@ -2,6 +2,7 @@ package com.yetnt.tokenzier.types.values.base;
 
 import com.yetnt.tokenzier.types.values.AsProvidedByValue;
 import com.yetnt.tokenzier.types.values.ReferToValue;
+import jdk.jfr.Name;
 
 /**
  * Any form value which should cause the interpreter to perform a look up to a previous form.
@@ -11,6 +12,7 @@ import com.yetnt.tokenzier.types.values.ReferToValue;
  * @see AsProvidedByValue
  * @author Lehlogonolo Poole
  */
+@BureaucraticType(friendlyName = "[lookup vqalue]")
 public interface ILookUpValue {
     /**
      * The index of the form to look up.
@@ -28,14 +30,14 @@ public interface ILookUpValue {
             return
                     new AsProvidedByValue(
                             Integer.parseInt(
-                                    input.substring(AsProvidedByValue.referenceText().length())
+                                    input.substring(AsProvidedByValue.referenceText().length()).trim()
                             )
                     );
         } else if (input.startsWith(ReferToValue.referenceText())) {
             return
                     new ReferToValue(
                             Integer.parseInt(
-                                    input.substring(ReferToValue.referenceText().length())
+                                    input.substring(ReferToValue.referenceText().length()).trim()
                             )
                     );
         }

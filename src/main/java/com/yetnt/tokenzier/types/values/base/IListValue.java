@@ -16,6 +16,7 @@ import java.util.ArrayList;
  * @author Lehlogonolo Poole
  * @param <T> The type of the list
  */
+@BureaucraticType(friendlyName = "[list value]")
 public interface IListValue<T> {
     /**
      * Returns the underlying list. This is identical to calling {@link FormEntryValue#getValue()}

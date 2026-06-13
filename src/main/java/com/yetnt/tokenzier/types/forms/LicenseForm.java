@@ -69,15 +69,15 @@ public class LicenseForm extends Form {
 
         @Override
         public <T extends EnumValues> T getEnumValueFrom(String otherValue, int lineNumber) throws BureaucraticError {
-            return switch (otherValue) {
-                case "No Distribution" -> (T) LicensePropertiesEnum.NO_DISTRIBUTION;
-                case "No Rights Reserved" -> (T) LicensePropertiesEnum.NO_RIGHTS_RESERVED;
-                case "No Warranty" -> (T) LicensePropertiesEnum.NO_WARRANTY;
-                case "Distributable" -> (T) LicensePropertiesEnum.DISTRIBUTABLE;
-                case "All Rights Reserved" -> (T) LicensePropertiesEnum.ALL_RIGHTS_RESERVED;
-                case "Warranty" -> (T) LicensePropertiesEnum.WARRANTY;
+            return (T) switch (otherValue) {
+                case "No Distribution" -> LicensePropertiesEnum.NO_DISTRIBUTION;
+                case "No Rights Reserved" -> LicensePropertiesEnum.NO_RIGHTS_RESERVED;
+                case "No Warranty" -> LicensePropertiesEnum.NO_WARRANTY;
+                case "Distributable" -> LicensePropertiesEnum.DISTRIBUTABLE;
+                case "All Rights Reserved" -> LicensePropertiesEnum.ALL_RIGHTS_RESERVED;
+                case "Warranty" -> LicensePropertiesEnum.WARRANTY;
                 default -> throw new BureaucraticError(
-                        "Form Entry does not expected the input \"" + otherValue + "\"",
+                        "License Properties does not accept the following input given: \"" + otherValue + "\"",
                         lineNumber
                 );
             };
@@ -110,11 +110,11 @@ public class LicenseForm extends Form {
 
         @Override
         public <T extends EnumValues> T getEnumValueFrom(String otherValue, int lineNumber) throws BureaucraticError {
-            return switch (otherValue) {
-                case "Generic" -> (T) LicenseTypeEnum.GENERIC;
-                case "Proprietary" -> (T) LicenseTypeEnum.PROPRIETARY;
+            return (T) switch (otherValue) {
+                case "Generic" -> LicenseTypeEnum.GENERIC;
+                case "Proprietary" -> LicenseTypeEnum.PROPRIETARY;
                 default -> throw new BureaucraticError(
-                        "Form Entry does not expected the input \"" + otherValue + "\"",
+                        "License Type does not expected the input \"" + otherValue + "\"",
                         lineNumber
                 );
             };

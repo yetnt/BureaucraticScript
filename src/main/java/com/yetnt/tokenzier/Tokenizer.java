@@ -32,6 +32,8 @@ public class Tokenizer {
             String line = Comments.decimate(scanner.nextLine()).trim();
 //            System.out.println(line);
             if (line.isBlank()) {
+                if (!formClosed)
+                    throw new BureaucraticError("Unexpected blank line, " + processingForm.getTitle() + " form not closed.", lineNumber);
                 // additional checks
                 formClosed = true;
                 continue;
@@ -54,7 +56,10 @@ public class Tokenizer {
 
                 // here there is some other form we need to start processing.
                 if (!line.startsWith("Form Title"))
-                    throw new BureaucraticError("Form Title was not provided", lineNumber);
+                    throw new BureaucraticError(
+                            "Invalid Beginning of form. Form Title was not provided. Instead got \""
+                            + line + "\""
+                            ,lineNumber);
                 var pair = createRaw(line, lineNumber);
                 if (!(pair.second() instanceof StringValue stringValue))
                     throw new BureaucraticError("Form Title expects a string", lineNumber);
@@ -186,8 +191,9 @@ public class Tokenizer {
                     new ReferenceListValue(values);
         } else {
             // split the string into lhs and rhs
-            String lhs = input.substring(0, lio.index);
-            String rhs = input.substring(lio.index);
+            String lhs = input.substring(0, lio.index).trim();
+            String rhs = input.substring(lio.index
+                    + (lio.op.length() == 1 ? 1 : 2)).trim();
             FormEntryValue<?> left = convertValue(lhs, lineNumber);
             FormEntryValue<?> right = convertValue(rhs, lineNumber);
             return new ExpressionValue(input, left, right, lio.op);

@@ -22,14 +22,14 @@ Renewal Year: 02/10/2028
 ~ Function Parameter Defintion form. Form 2
 Form Title: Function Parameter Definition
 Parameter Name: First Number
-Expected Type: Integer
+Expected Type: Number
 Optional: False
 Default Value: N/A
 
 ~ Form 3
 Form Title: Function Parameter Definition
 Parameter Name: Second Number
-Expected Type: Integer
+Expected Type: Number
 Optional: True
 Default Value: 0
 
