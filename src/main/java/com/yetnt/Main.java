@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import static com.yetnt.tokenzier.Tokenizer.tokenize;
+import static com.yetnt.tokeniser.Tokeniser.tokenise;
 
 public class Main {
     public static void main(String[] args) throws BureaucraticError, FileNotFoundException {
@@ -23,7 +23,7 @@ public class Main {
             throw new BureaucraticError("File does not exist", -1);
 
         try (Scanner sc = new Scanner(myObj)) {
-            tokenize(sc);
+            tokenise(sc);
         }
     }
 }
