@@ -1,9 +1,30 @@
 package com.yetnt.tokenzier.types.values;
 
-import com.yetnt.tokenzier.types.AtomicValue;
-import com.yetnt.tokenzier.types.FormEntryValue;
+import com.yetnt.tokenzier.types.values.base.IAtomicValue;
+import com.yetnt.tokenzier.types.values.base.BureaucraticType;
+import com.yetnt.tokenzier.types.values.base.FormEntryValue;
+import com.yetnt.tokenzier.types.values.base.IComputableValue;
 
-public class NumberValue extends FormEntryValue<Number> implements AtomicValue {
+/**
+ * A token who is just a wrapper around Java's {@link Number} type.
+ * <p>
+ *     This token is used to represent a number, which can be either an integer or a double.
+ * </p>
+ * <p>
+ *     Examples:
+ *     <pre>{@code
+ *     Form Title: Example
+ *     Number: 123
+ *     Decimal: 123.45
+ *     Expression: 1 + 2.5
+ *     }</pre>
+ * </p>
+ * @see IComputableValue
+ * @see IAtomicValue
+ * @author Lehlogonolo Poole
+ */
+@BureaucraticType(friendlyName = "Number")
+public class NumberValue extends FormEntryValue<Number> implements IComputableValue {
     public NumberValue(String value) throws NumberFormatException {
         super();
         try {

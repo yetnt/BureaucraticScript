@@ -4,23 +4,23 @@ import com.yetnt.errs.BureaucraticError;
 import com.yetnt.tokenzier.types.Form;
 import com.yetnt.tokenzier.types.FormEntry;
 import com.yetnt.tokenzier.types.FormType;
-import com.yetnt.tokenzier.types.values.DateValue;
-import com.yetnt.tokenzier.types.values.EnumValue;
-import com.yetnt.tokenzier.types.EnumValues;
-import com.yetnt.tokenzier.types.values.StringValue;
+import com.yetnt.tokenzier.types.values.*;
+import com.yetnt.tokenzier.types.values.base.EnumValues;
 
 import java.util.ArrayList;
 
 public class LicenseForm extends Form {
 
-    public FormEntry<StringValue> formTitle;
-    public FormEntry<EnumValue<LicenseTypeEnum>> licenseType = new FormEntry<>("License Type", new EnumValue<>("Generic", LicenseTypeEnum.GENERIC));
-    public FormEntry<EnumValue<LicensePropertiesEnum>> licenseProperties = new FormEntry<>("License Properties", new EnumValue<>("No Distribution", LicensePropertiesEnum.NO_DISTRIBUTION));
-    public FormEntry<DateValue> licenseYear;
-    public FormEntry<DateValue> renewalYear;
+    public StringValue formTitle;
+    public FormEntry<EnumValue<LicenseTypeEnum>> licenseTypeFormEntry = new FormEntry<>("License Type", new EnumValue<>("Generic", LicenseTypeEnum.GENERIC));
+    public FormEntry<EnumListValue<LicensePropertiesEnum>> licensePropertiesFormEntry = new FormEntry<>("License Properties", new EnumListValue<>(LicensePropertiesEnum.NO_DISTRIBUTION));
+    public EnumValue<LicenseTypeEnum> licenseType;
+    public EnumListValue<LicensePropertiesEnum> licenseProperties;
+    public DateValue licenseYear;
+    public DateValue renewalYear;
 
-    public LicenseForm() {
-        super("License Form", FormType.PROCESS);
+    public LicenseForm() throws BureaucraticError {
+        super("License", FormType.PROCESS);
         formEntryOrder.add("Form Title");
         formEntryOrder.add("License Type");
         formEntryOrder.add("License Properties");
@@ -32,18 +32,21 @@ public class LicenseForm extends Form {
     public void finish() throws BureaucraticError {
         super.finish();
         this.formType = FormType.LICENSE;
-        formTitle = (FormEntry<StringValue>) formEntries.get("Form Title");
-        licenseType.getValue().fromStringValue((FormEntry<StringValue>) formEntries.get("License Type"));
-        licenseProperties.getValue().fromStringValue((FormEntry<StringValue>) formEntries.get("License Properties"));
-        licenseYear = (FormEntry<DateValue>) formEntries.get("License Year");
-        renewalYear = (FormEntry<DateValue>) formEntries.get("Renewal Year");
+        formTitle = get(StringValue.class, formEntries.get("Form Title"));
+        licenseType = get(licenseTypeFormEntry, formEntries.get("License Type"));
+        licenseProperties = get(licensePropertiesFormEntry, formEntries.get("License Properties"), true);
+        licenseYear = get(DateValue.class, formEntries.get("License Year"));
+        renewalYear = get(DateValue.class, formEntries.get("Renewal Year"));
     }
 
 
     public enum LicensePropertiesEnum implements EnumValues {
         NO_DISTRIBUTION("No Distribution"),
+        DISTRIBUTABLE("Distributable"),
         NO_RIGHTS_RESERVED("No Rights Reserved"),
-        NO_WARRANTY("No Warranty");
+        ALL_RIGHTS_RESERVED("All Rights Reserved"),
+        NO_WARRANTY("No Warranty"),
+        WARRANTY("Warranty");;
 
         private final String value;
 
@@ -65,12 +68,18 @@ public class LicenseForm extends Form {
         }
 
         @Override
-        public <T extends EnumValues> T getEnumValueFrom(String otherValue) {
+        public <T extends EnumValues> T getEnumValueFrom(String otherValue, int lineNumber) throws BureaucraticError {
             return switch (otherValue) {
                 case "No Distribution" -> (T) LicensePropertiesEnum.NO_DISTRIBUTION;
                 case "No Rights Reserved" -> (T) LicensePropertiesEnum.NO_RIGHTS_RESERVED;
                 case "No Warranty" -> (T) LicensePropertiesEnum.NO_WARRANTY;
-                default -> null;
+                case "Distributable" -> (T) LicensePropertiesEnum.DISTRIBUTABLE;
+                case "All Rights Reserved" -> (T) LicensePropertiesEnum.ALL_RIGHTS_RESERVED;
+                case "Warranty" -> (T) LicensePropertiesEnum.WARRANTY;
+                default -> throw new BureaucraticError(
+                        "Form Entry does not expected the input \"" + otherValue + "\"",
+                        lineNumber
+                );
             };
         }
 
@@ -100,11 +109,14 @@ public class LicenseForm extends Form {
         }
 
         @Override
-        public <T extends EnumValues> T getEnumValueFrom(String otherValue) {
+        public <T extends EnumValues> T getEnumValueFrom(String otherValue, int lineNumber) throws BureaucraticError {
             return switch (otherValue) {
                 case "Generic" -> (T) LicenseTypeEnum.GENERIC;
                 case "Proprietary" -> (T) LicenseTypeEnum.PROPRIETARY;
-                default -> null;
+                default -> throw new BureaucraticError(
+                        "Form Entry does not expected the input \"" + otherValue + "\"",
+                        lineNumber
+                );
             };
         }
     }

@@ -1,16 +1,21 @@
 package com.yetnt.tokenzier.types;
 
+/**
+ * Represents the type of a {@link Form}.
+ * @see Form
+ * @author Lehlogonolo Poole
+ */
 public enum FormType {
     /**
-     * Generic Complete Form
+     * Any complete form
      */
     GENERIC,
     /**
-     * The .bdocs header form
+     * A documents header form
      */
     DOCUMENTS_HEADER,
     /**
-     * The license form
+     * A license form
      */
     LICENSE,
     /**

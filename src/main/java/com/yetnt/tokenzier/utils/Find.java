@@ -10,6 +10,25 @@ import java.util.List;
 
 public class Find {
 
+    public static String[] splitByAmount(String line, String separator, int amount) {
+        String[] arr = new String[amount];
+        String[] split = line.split(separator);
+
+        // perform the normal split
+        // if the amount needed is more than the split then populate the rest of the array with empty strings
+        // if the amount needed is less than the split, populate the last element with the rest of the string
+        if (split.length >= amount) {
+            System.arraycopy(split, 0, arr, 0, amount - 1);
+            arr[amount - 1] = String.join(separator, Arrays.copyOfRange(split, amount - 1, split.length));
+        } else {
+            System.arraycopy(split, 0, arr, 0, split.length);
+            for (int i = split.length; i < amount; i++) {
+                arr[i] = "";
+            }
+        }
+        return arr;
+    }
+
     public static class LeastImportantOperator {
         public String op;
         public int index;
