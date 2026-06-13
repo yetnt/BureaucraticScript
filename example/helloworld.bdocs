@@ -1,8 +1,8 @@
-Documents Title: Print
+Documents Title: Hello World
 Version: 1
 Time: 12:04 AM
 Date: 13/06/2026
-Forms Amount: 4
+Forms Amount: 3
 Author: yetnt
 Line Separator: CRLF
 
@@ -12,14 +12,6 @@ License Properties: No Distribution, All Rights Reserved
 License Year: 2026
 Renewal Year: 2028
 
-Form Title: Symbol Addition Request
-Symbol Type: Variable
-Symbol Name: My Lovely String
-Symbol Scope: Global
-Request Definition Body: N/A
-Request Body: Hello World
-Symbol Return Type: String
-
 Form Title: Symbol Retrieval Request
 Requesting Symbol: Print
 Source Archive: Global
@@ -27,5 +19,5 @@ Verification: Certified Copy
 
 Form Title: Function Call Request
 Function Name: Print
-Function Parameter 1: (As Provided By Form 2)
+Function Parameter 1: Hello World!
 Function Integrity: No Return Value
