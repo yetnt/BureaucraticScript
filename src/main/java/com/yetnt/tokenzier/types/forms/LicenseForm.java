@@ -6,7 +6,7 @@ import com.yetnt.tokenzier.types.FormEntry;
 import com.yetnt.tokenzier.types.FormType;
 import com.yetnt.tokenzier.types.values.DateValue;
 import com.yetnt.tokenzier.types.values.EnumValue;
-import com.yetnt.tokenzier.types.values.EnumValues;
+import com.yetnt.tokenzier.types.EnumValues;
 import com.yetnt.tokenzier.types.values.StringValue;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class LicenseForm extends Form {
     public FormEntry<DateValue> renewalYear;
 
     public LicenseForm() {
-        super("License Form", FormType.LICENSE);
+        super("License Form", FormType.PROCESS);
         formEntryOrder.add("Form Title");
         formEntryOrder.add("License Type");
         formEntryOrder.add("License Properties");
@@ -31,6 +31,7 @@ public class LicenseForm extends Form {
     @Override
     public void finish() throws BureaucraticError {
         super.finish();
+        this.formType = FormType.LICENSE;
         formTitle = (FormEntry<StringValue>) formEntries.get("Form Title");
         licenseType.getValue().fromStringValue((FormEntry<StringValue>) formEntries.get("License Type"));
         licenseProperties.getValue().fromStringValue((FormEntry<StringValue>) formEntries.get("License Properties"));

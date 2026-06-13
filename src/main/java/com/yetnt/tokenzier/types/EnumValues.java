@@ -1,6 +1,4 @@
-package com.yetnt.tokenzier.types.values;
-
-import com.yetnt.errs.BureaucraticError;
+package com.yetnt.tokenzier.types;
 
 import java.util.ArrayList;
 

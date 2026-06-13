@@ -1,5 +1,6 @@
 package com.yetnt.tokenzier.types.forms;
 
+import com.yetnt.errs.BureaucraticError;
 import com.yetnt.tokenzier.types.Form;
 import com.yetnt.tokenzier.types.FormEntry;
 import com.yetnt.tokenzier.types.FormType;
@@ -8,7 +9,7 @@ import com.yetnt.tokenzier.types.values.NumberValue;
 import com.yetnt.tokenzier.types.values.StringValue;
 import com.yetnt.tokenzier.types.values.TimeValue;
 
-public class DocumentHeader extends Form {
+public class DocumentsHeader extends Form {
 
     public FormEntry<StringValue> documentsTitle;
     public FormEntry<NumberValue> version;
@@ -18,8 +19,8 @@ public class DocumentHeader extends Form {
     public FormEntry<StringValue> author;
     public FormEntry<StringValue> lineSeparator;
 
-    public DocumentHeader() {
-        super("Documents Header",  FormType.DOCUMENTS_HEADER);
+    public DocumentsHeader() {
+        super("Documents Header",  FormType.PROCESS);
         formEntryOrder.add("Documents Title");
         formEntryOrder.add("Version");
         formEntryOrder.add("Time");
@@ -30,8 +31,9 @@ public class DocumentHeader extends Form {
     }
 
     @Override
-    public void finish() {
+    public void finish() throws BureaucraticError {
         super.finish();
+        this.formType = FormType.DOCUMENTS_HEADER;
         documentsTitle = (FormEntry<StringValue>) formEntries.get("Documents Title");
         version = (FormEntry<NumberValue>) formEntries.get("Version");
         time = (FormEntry<TimeValue>) formEntries.get("Time");

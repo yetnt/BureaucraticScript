@@ -4,11 +4,12 @@ import com.yetnt.errs.BureaucraticError;
 import com.yetnt.tokenzier.Tokenizer;
 import com.yetnt.tokenzier.types.AtomicValue;
 import com.yetnt.tokenzier.types.FormEntryValue;
+import com.yetnt.tokenzier.types.ListValue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReferenceListValue extends FormEntryValue<ArrayList<ReferToValue>> {
+public class ReferenceListValue extends FormEntryValue<ArrayList<ReferToValue>> implements ListValue<ReferToValue> {
     public ReferenceListValue(String value) throws BureaucraticError {
         super(new ArrayList<>());
         String[] references = value.split(",");
@@ -29,6 +30,11 @@ public class ReferenceListValue extends FormEntryValue<ArrayList<ReferToValue>> 
 
     public List<ReferToValue> getReferences() {
         return getValue();
+    }
+
+    @Override
+    public ArrayList<ReferToValue> list() {
+        return value;
     }
 
 }

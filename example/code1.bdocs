@@ -1,0 +1,86 @@
+~ The code documents.
+
+~ Documents Header
+Documents Title: Code
+Version: 1
+Time: 12:04 AM
+Date: 11/06/2026
+Forms Amount: 10
+Author: yetnt
+Line Separator: CRLF
+
+~ License Form. Form 1
+~ No Distribution -> No Code can access any forms within this set of documents
+~ No Rights Reserved -> The Central Filing Authority does not have the rights to execute this file. only validate
+~ No Warranty -> The Central Filing Authority does not need provide safety after errirs
+Form Title: License
+License Type: Generic
+License Properties: No Distribution, No Rights Reserved, No Warranty
+License Year: 2026
+Renewal Year: 2028
+
+~ Function Parameter Defintion form. Form 2
+Form Title: Function Parameter Definition
+Parameter Name: First Number
+Expected Type: Integer
+Optional: False
+Default Value: N/A
+
+~ Form 3
+Form Title: Function Parameter Definition
+Parameter Name: Second Number
+Expected Type: Integer
+Optional: True
+Default Value: 0
+
+~ A Scope registration form for the function body Form 4
+~ The scope is defined as a child scope of the Global scope
+~ This scope is registered as to be executed only once, and can throw errors outside.
+Form Title: Scope Registration Request
+Scoping Authority: Global
+Scope Author: yetnt
+Execution: One Time
+Safety: Unsafe
+
+~ A Scope allocation request so the filing authority knows exactly how much is expected.
+~ to be stored within the newly made scope. Form 5
+Form Title: Scope Allocation Request
+Scoping Authority: (Refer To Form 4)
+Amount: 1
+
+~ A function body definition form. Form 6
+~ Defines the function body that the function will use
+~ This simply retrieves the value the parameters would have in the scope.
+Form Title: Function Body Definition
+Form Body Return: (As Provided By Form 2) + (As Provided By Form 3)
+Scoping Body: (Refer To Form 4)
+
+~ A Symbol addition request to a specific scope. Form 7
+~ Defines the addition of a symbol, in this case a function
+Form Title: Symbol Addition Request
+Symbol Type: Function
+Symbol Name: Add Two Numbers
+Symbol Scope: Global
+Request Definition Body: (Refer To Form 2), (Refer To Form 3)
+Request Body: (Refer To Form 6)
+Symbol Return Type: Integer
+
+~ A Function call request to call add two numbers function. Form 8
+Form Title: Function Call Request
+Function Name: Add Two Numbers
+Function Parameter 1: 10
+Function Parameter 2: 12
+Function Integrity: Returns Number
+
+~ A symbol retrieval request to retrieve the import symbol from the Global scope registry.
+~ Form 9
+Form Title: Symbol Retrieval Request
+Requesting Symbol: Print
+Source Archive: Global
+Verification: Certified Copy
+
+~ Form 10
+Form Title: Function Call Request
+Function Name: Print
+Function Parameter 1: (As Provided By Form 8)
+Function Integrity: No Return

@@ -3,8 +3,9 @@ package com.yetnt.tokenzier;
 import com.yetnt.errs.BureaucraticError;
 import com.yetnt.lang.Chars;
 import com.yetnt.tokenzier.types.Form;
+import com.yetnt.tokenzier.types.FormType;
 import com.yetnt.tokenzier.types.ReferencialValue;
-import com.yetnt.tokenzier.types.forms.DocumentHeader;
+import com.yetnt.tokenzier.types.forms.DocumentsHeader;
 import com.yetnt.tokenzier.types.FormEntryValue;
 import com.yetnt.tokenzier.types.values.ExpressionValue;
 import com.yetnt.tokenzier.types.values.NumberValue;
@@ -14,9 +15,7 @@ import com.yetnt.tokenzier.utils.Find;
 import com.yetnt.utils.Pair;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Scanner;
-import java.util.Set;
 
 public class Tokenizer {
     public static void tokenize(Scanner scanner) throws BureaucraticError {
@@ -42,7 +41,7 @@ public class Tokenizer {
                     // We expect the Documents header form.
                     if (!line.startsWith("Documents Title"))
                         throw new BureaucraticError("No Documents Header");
-                    processingForm = new DocumentHeader();
+                    processingForm = new DocumentsHeader();
                     forms.add(processingForm);
 
                     var pair = createRaw(line);
@@ -51,20 +50,33 @@ public class Tokenizer {
                     continue;
                 }
 
-                // here there its some other form we need to start processing.
+                // here there is some other form we need to start processing.
                 if (!line.startsWith("Form Title"))
                     throw new BureaucraticError("Form Title was not provided");
                 var pair = createRaw(line);
-                processingForm = Form.toClassForm(pair.second());
+                if (!(pair.second() instanceof StringValue stringValue))
+                    throw new BureaucraticError("Form Title expects a string");
+                processingForm = Form.toClassForm(stringValue.getValue());
+                forms.add(processingForm);
+                ohterProcessedEntries.add(pair.first());
+
             } else if (!processingForm.isEmptyForm() && !formClosed) {
                 // finish the form.
                 var pair = createRaw(line);
                 processingForm.addEntry(
+                        // the form is responsible for ensuring the correct next form is placed.
                         ohterProcessedEntries,
                         pair.first(),
                         pair.second()
                 );
                 ohterProcessedEntries.add(pair.first());
+                // The form may have finished and finalized itself.
+                if (processingForm.getFormType() != FormType.PROCESS) {
+                    // Completed form.
+                    formClosed = true;
+                    processingForm = null;
+                    ohterProcessedEntries = new ArrayList<>();
+                }
             }
         }
     }

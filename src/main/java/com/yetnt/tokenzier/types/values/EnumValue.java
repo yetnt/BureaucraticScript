@@ -1,6 +1,7 @@
 package com.yetnt.tokenzier.types.values;
 
 import com.yetnt.errs.BureaucraticError;
+import com.yetnt.tokenzier.types.EnumValues;
 import com.yetnt.tokenzier.types.FormEntry;
 import com.yetnt.tokenzier.types.FormEntryValue;
 
