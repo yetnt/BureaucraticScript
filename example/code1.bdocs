@@ -37,7 +37,7 @@ Default Value: 0
 ~ The scope is defined as a child scope of the Global scope
 ~ This scope is registered as to be executed only once, and can throw errors outside.
 Form Title: Scope Registration Request
-Scoping Authority: Global
+Scoping Authority: Refer To Form 0               ~ Global Scope
 Scope Author: yetnt
 Execution: One Time
 Safety: Unsafe
@@ -60,7 +60,7 @@ Scoping Body: (Refer To Form 4)
 Form Title: Symbol Addition Request
 Symbol Type: Function
 Symbol Name: Add Two Numbers
-Symbol Scope: Global
+Symbol Scope: Refer To Form 0               ~ Global Scope
 Request Definition Body: (Refer To Form 2), (Refer To Form 3)
 Request Body: (Refer To Form 6)
 Symbol Return Type: Integer
@@ -76,7 +76,7 @@ Function Integrity: Returns Number
 ~ Form 9
 Form Title: Symbol Retrieval Request
 Requesting Symbol: Print
-Source Archive: Global
+Source Archive: Refer To Form 0               ~ Global Scope
 Verification: Certified Copy
 
 ~ Form 10

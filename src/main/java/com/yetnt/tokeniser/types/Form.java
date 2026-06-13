@@ -144,6 +144,9 @@ public class Form {
         allForms.add(new DocumentsHeader());
         allForms.add(new LicenseForm());
         allForms.add(new TestingForm());
+        allForms.add(new FunctionParamDefForm());
+        allForms.add(new ScopeRegistrationForm());
+        allForms.add(new ScopeAllocReqForm());
 
         for (Form form : allForms) {
             if (form.getTitle().equals(title)) {
