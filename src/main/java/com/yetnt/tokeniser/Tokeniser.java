@@ -4,6 +4,7 @@ import com.yetnt.errs.BureaucraticError;
 import com.yetnt.lang.Chars;
 import com.yetnt.tokeniser.types.Form;
 import com.yetnt.tokeniser.types.FormType;
+import com.yetnt.tokeniser.types.forms.LicenseForm;
 import com.yetnt.tokeniser.types.values.base.ILookUpValue;
 import com.yetnt.tokeniser.types.forms.DocumentsHeader;
 import com.yetnt.tokeniser.types.values.base.FormEntryValue;
@@ -35,7 +36,7 @@ public class Tokeniser {
                 if (!formClosed)
                     throw new BureaucraticError("Unexpected blank line, " + processingForm.getTitle() + " form not closed.", lineNumber);
                 // additional checks
-                formClosed = true;
+//                formClosed = true;
                 continue;
             }
 
@@ -44,8 +45,19 @@ public class Tokeniser {
                 if (forms.isEmpty()) {
                     // We expect the Documents header form.
                     if (!line.startsWith("Documents Title"))
-                        throw new BureaucraticError("No Documents Header", lineNumber);
+                        throw new BureaucraticError("The first form of a file has to be the Documents Header", lineNumber);
                     processingForm = new DocumentsHeader();
+                    forms.add(processingForm);
+
+                    var pair = createRaw(line, lineNumber);
+                    processingForm.addEntry(ohterProcessedEntries, pair.first(), pair.second());
+                    ohterProcessedEntries.add(pair.first());
+                    continue;
+                } else if (forms.size() == 1) {
+                    // We expect the License Form right after the header.
+                    if (!(line.startsWith("Form Title") && line.endsWith("License")))
+                        throw new BureaucraticError("The second form of a file has to be the License", lineNumber);
+                    processingForm = new LicenseForm();
                     forms.add(processingForm);
 
                     var pair = createRaw(line, lineNumber);
