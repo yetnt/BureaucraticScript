@@ -11,7 +11,7 @@ import com.yetnt.tokeniser.types.values.ReferToValue;
  * @see AsProvidedByValue
  * @author Lehlogonolo Poole
  */
-@BureaucraticType(friendlyName = "[lookup vqalue]")
+@BureaucraticType(friendlyName = "[lookup value]")
 public interface ILookUpValue {
     /**
      * The index of the form to look up.

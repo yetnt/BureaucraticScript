@@ -5,6 +5,7 @@ import com.yetnt.tokeniser.types.values.base.FormEntryValue;
 import com.yetnt.tokeniser.types.values.base.IListValue;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A list token, who is specifically a list of {@link StringValue}.
@@ -33,6 +34,9 @@ public class StringListValue extends FormEntryValue<ArrayList<StringValue>> impl
 
     public StringListValue(ArrayList<?> value) {
         super((ArrayList<StringValue>) value);
+    }
+    public StringListValue(StringValue value) {
+        super(new ArrayList<>(List.of(value)));
     }
 
     @Override

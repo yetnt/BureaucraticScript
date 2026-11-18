@@ -19,7 +19,7 @@ License Properties: No Distribution, No Rights Reserved, No Warranty
 License Year: 02/10/2026
 Renewal Year: 02/10/2028
 
-~ Function Parameter Defintion form. Form 2
+~ Function Parameter Definition form. Form 2
 Form Title: Function Parameter Definition
 Parameter Name: First Number
 Expected Type: Number
@@ -68,8 +68,7 @@ Symbol Return Type: Integer
 ~ A Function call request to call add two numbers function. Form 8
 Form Title: Function Call Request
 Function Name: Add Two Numbers
-Function Parameter 1: 10
-Function Parameter 2: 12
+Function Parameters: 10, 12
 Function Integrity: Returns Number
 
 ~ A symbol retrieval request to retrieve the import symbol from the Global scope registry.
@@ -82,5 +81,11 @@ Verification: Certified Copy
 ~ Form 10
 Form Title: Function Call Request
 Function Name: Print
-Function Parameter 1: (As Provided By Form 8)
+Function Parameters: (As Provided By Form 8)
 Function Integrity: No Return
+
+
+~ function Add(a, b) {
+~ return a + b;
+~ }
+~ print(function(Add(10, 12)));

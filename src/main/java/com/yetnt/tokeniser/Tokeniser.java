@@ -11,7 +11,8 @@ import com.yetnt.tokeniser.types.values.base.FormEntryValue;
 import com.yetnt.tokeniser.types.values.*;
 import com.yetnt.tokeniser.utils.Comments;
 import com.yetnt.tokeniser.utils.Find;
-import com.yetnt.utils.Pair;
+import io.github.yetnt.utils.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -21,10 +22,10 @@ import java.util.Scanner;
 
 public class Tokeniser {
 
-    public static void tokenise(Scanner scanner) throws BureaucraticError {
+    public static void tokenise(@NotNull Scanner scanner) throws BureaucraticError {
         ArrayList<Form> forms = new ArrayList<>();
         Form processingForm = Form.empty();
-        ArrayList<String> ohterProcessedEntries = new ArrayList<>();
+        ArrayList<String> otherProcessedEntries = new ArrayList<>();
         boolean formClosed = true;
         int lineNumber = 0;
 
@@ -50,8 +51,8 @@ public class Tokeniser {
                     forms.add(processingForm);
 
                     var pair = createRaw(line, lineNumber);
-                    processingForm.addEntry(ohterProcessedEntries, pair.first(), pair.second());
-                    ohterProcessedEntries.add(pair.first());
+                    processingForm.addEntry(otherProcessedEntries, pair.getFirst(), pair.getSecond());
+                    otherProcessedEntries.add(pair.getFirst());
                     continue;
                 } else if (forms.size() == 1) {
                     // We expect the License Form right after the header.
@@ -61,8 +62,8 @@ public class Tokeniser {
                     forms.add(processingForm);
 
                     var pair = createRaw(line, lineNumber);
-                    processingForm.addEntry(ohterProcessedEntries, pair.first(), pair.second());
-                    ohterProcessedEntries.add(pair.first());
+                    processingForm.addEntry(otherProcessedEntries, pair.getFirst(), pair.getSecond());
+                    otherProcessedEntries.add(pair.getFirst());
                     continue;
                 }
 
@@ -73,33 +74,33 @@ public class Tokeniser {
                             + line + "\""
                             ,lineNumber);
                 var pair = createRaw(line, lineNumber);
-                if (!(pair.second() instanceof StringValue stringValue))
+                if (!(pair.getSecond() instanceof StringValue stringValue))
                     throw new BureaucraticError("Form Title expects a string", lineNumber);
                 processingForm = Form.toClassForm(stringValue.getValue(), lineNumber);
                 processingForm.addEntry(
-                        ohterProcessedEntries,
-                        pair.first(),
-                        pair.second()
+                        otherProcessedEntries,
+                        pair.getFirst(),
+                        pair.getSecond()
                 );
                 forms.add(processingForm);
-                ohterProcessedEntries.add(pair.first());
+                otherProcessedEntries.add(pair.getFirst());
 
             } else if (!processingForm.isEmptyForm() && !formClosed) {
                 // finish the form.
                 var pair = createRaw(line, lineNumber);
                 processingForm.addEntry(
                         // the form is responsible for ensuring the correct next form is placed.
-                        ohterProcessedEntries,
-                        pair.first(),
-                        pair.second()
+                        otherProcessedEntries,
+                        pair.getFirst(),
+                        pair.getSecond()
                 );
-                ohterProcessedEntries.add(pair.first());
+                otherProcessedEntries.add(pair.getFirst());
                 // The form may have finished and finalized itself.
                 if (processingForm.getFormType() != FormType.PROCESS) {
                     // Completed form.
                     formClosed = true;
                     processingForm = new Form();
-                    ohterProcessedEntries = new ArrayList<>();
+                    otherProcessedEntries = new ArrayList<>();
                 }
             }
         }
@@ -146,6 +147,7 @@ public class Tokeniser {
         }
     }
 
+    @NotNull
     private static FormEntryValue<?> convertValueExtracted(String input, int lineNumber) throws BureaucraticError {
         Find.LeastImportantOperator lio = Find.leastImportantOperator(input);
         if (lio.index == -1) {
@@ -157,15 +159,14 @@ public class Tokeniser {
                         input.substring(1, input.length() - 1), lineNumber
                 );
             }
-            // Not wrapped in a brace and not a number. Check for referencial
-            FormEntryValue<?> referencial = ILookUpValue.getLookUpToken(input);
-
-            if (referencial != null) {
-                return referencial;
-            }
 
             if (!input.contains(",")) {
-                return new StringValue(input);
+                // Not wrapped in a brace and not a number. Check for referencial
+                FormEntryValue<?> referencial = ILookUpValue.getLookUpToken(input);
+                if (referencial != null)
+                    return referencial;
+                else
+                    return new StringValue(input);
             }
 
             // Here it can only be a list of values.
@@ -178,29 +179,31 @@ public class Tokeniser {
                 // check if its a referencial.
                 part = part.trim();
                 FormEntryValue<?> ref = convertValue(part, lineNumber); // we could shortcut and just check referencial directly, but braces.
-                if (!(ref instanceof ReferToValue || ref instanceof StringValue))
-                    throw new BureaucraticError(
-                            "List values can only be a reference or a string value. Value not supported: \"" + input + "\"",
-                            lineNumber
-                    );
-                if (isStringValue == null) {
-                    isStringValue = ref instanceof StringValue;
-                } else {
-                    if (isStringValue != (ref instanceof StringValue))
-                        throw new BureaucraticError(
-                                "The given list can only be of a single type. The first value was a " +
-                                        (isStringValue ? "string" : "reference") +
-                                        " but the nth value was a " +
-                                        (isStringValue ? "string" : "reference"),
-                                lineNumber
-                        );
-                }
+//                if (!(ref instanceof ReferToValue || ref instanceof StringValue))
+//                    throw new BureaucraticError(
+//                            "List values can only be a reference or a string value. Value not supported: \"" + input + "\"",
+//                            lineNumber
+//                    );
+//                if (isStringValue == null) {
+//                    isStringValue = ref instanceof StringValue;
+//                } else {
+//                    if (isStringValue != (ref instanceof StringValue))
+//                        throw new BureaucraticError(
+//                                "The given list can only be of a single type. The first value was a " +
+//                                        (isStringValue ? "string" : "reference") +
+//                                        " but the nth value was a " +
+//                                        (isStringValue ? "string" : "reference"),
+//                                lineNumber
+//                        );
+//                }
                 values.add(ref);
             }
 
-            return values.getFirst() instanceof StringValue ?
+            return values.stream().allMatch(v -> v instanceof StringValue) ?
                     new StringListValue(values) :
-                    new ReferenceListValue(values);
+                    values.stream().allMatch(v -> v instanceof ReferToValue) ?
+            new ReferenceListValue(values) :
+            new AnyListValue(values);
         } else {
             // split the string into lhs and rhs
             String lhs = input.substring(0, lio.index).trim();

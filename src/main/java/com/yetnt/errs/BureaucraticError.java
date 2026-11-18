@@ -1,13 +1,13 @@
 package com.yetnt.errs;
 
-import com.yetnt.utils.CCol;
+import io.github.yetnt.utils.builders.AnsiColour;
 
 public class BureaucraticError extends Exception {
 
     public BureaucraticError(String message, int lineNumber) {
         super(
-                CCol.print(message, CCol.TEXT.RED, CCol.FONT.ITALIC, CCol.TEXT.RED) + " " +
-                        CCol.print("[On line " + lineNumber + "]", CCol.TEXT.YELLOW, CCol.FONT.BOLD)
+                AnsiColour.print(message, AnsiColour.FORE.RED, AnsiColour.FONT.ITALIC, AnsiColour.FORE.RED) + " " +
+                        AnsiColour.print("[On line " + lineNumber + "]", AnsiColour.FORE.YELLOW, AnsiColour.FONT.BOLD)
         );
     }
 

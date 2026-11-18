@@ -27,22 +27,26 @@ import java.util.List;
  */
 @BureaucraticType(friendlyName = "Reference List")
 public class ReferenceListValue extends FormEntryValue<ArrayList<ReferToValue>> implements IListValue<ReferToValue> {
-    public ReferenceListValue(String value) throws BureaucraticError {
-        super(new ArrayList<>());
-        String[] references = value.split(",");
-        for (String ref : references) {
-            String trimmedRef = ref.trim();
-            FormEntryValue<?> val = Tokeniser.convertValue(trimmedRef, lineNumber);
-            if (val instanceof ReferToValue referToValue) {
-                getValue().add(referToValue);
-            } else {
-                throw new BureaucraticError("Invalid Reference Given \"" + trimmedRef + "\"", lineNumber);
-            }
-        }
-    }
+//    public ReferenceListValue(String value) throws BureaucraticError {
+//        super(new ArrayList<>());
+//        String[] references = value.split(",");
+//        for (String ref : references) {
+//            String trimmedRef = ref.trim();
+//            FormEntryValue<?> val = Tokeniser.convertValue(trimmedRef, lineNumber);
+//            if (val instanceof ReferToValue referToValue) {
+//                getValue().add(referToValue);
+//            } else {
+//                throw new BureaucraticError("Invalid Reference Given \"" + trimmedRef + "\"", lineNumber);
+//            }
+//        }
+//    }
 
     public ReferenceListValue(ArrayList<?> value) {
         super((ArrayList<ReferToValue>) value);
+    }
+
+    public ReferenceListValue(ReferToValue value) {
+        super(new ArrayList<>(List.of(value)));
     }
 
     public List<ReferToValue> getReferences() {

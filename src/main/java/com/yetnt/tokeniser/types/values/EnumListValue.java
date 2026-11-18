@@ -7,6 +7,7 @@ import com.yetnt.tokeniser.types.values.base.EnumValues;
 import com.yetnt.tokeniser.types.FormEntry;
 import com.yetnt.tokeniser.types.values.base.FormEntryValue;
 import com.yetnt.tokeniser.types.values.base.IListValue;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -54,7 +55,7 @@ public class EnumListValue<T extends EnumValues> extends FormEntryValue<ArrayLis
         return enumValue;
     }
 
-    public void fromListStringValues(FormEntry<?> otherFormGeneric) throws BureaucraticError {
+    public void fromListStringValues(@NotNull FormEntry<?> otherFormGeneric) throws BureaucraticError {
         attachLineNumber(otherFormGeneric.getValue().getLineNumber());
         if (otherFormGeneric.getValue() instanceof StringListValue otherForm) {
             // Given a form entry with a list of strings.

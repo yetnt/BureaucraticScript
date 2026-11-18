@@ -2,11 +2,12 @@ package com.yetnt.tokeniser.types.forms;
 
 import com.yetnt.errs.BureaucraticError;
 import com.yetnt.tokeniser.types.Form;
+import com.yetnt.tokeniser.types.FormEntry;
 import com.yetnt.tokeniser.types.FormType;
-import com.yetnt.tokeniser.types.values.DateValue;
-import com.yetnt.tokeniser.types.values.NumberValue;
-import com.yetnt.tokeniser.types.values.StringValue;
-import com.yetnt.tokeniser.types.values.TimeValue;
+import com.yetnt.tokeniser.types.values.*;
+import com.yetnt.tokeniser.types.values.base.EnumValues;
+
+import java.util.ArrayList;
 
 public class DocumentsHeader extends Form {
 
@@ -16,17 +17,20 @@ public class DocumentsHeader extends Form {
     public DateValue date;
     public NumberValue formsAmount;
     public StringValue author;
-    public StringValue lineSeparator;
+
+    public EnumValue<LineEndingEnum> lineSeparator;
+    public FormEntry<EnumValue<LineEndingEnum>> lineSeparatorFormEntry =
+            new FormEntry<>("Line Separator", new EnumValue<>("CRLF", LineEndingEnum.CRLF));
 
     public DocumentsHeader() {
         super("Documents Header",  FormType.PROCESS);
-        formEntryOrder.add("Documents Title");
-        formEntryOrder.add("Version");
-        formEntryOrder.add("Time");
-        formEntryOrder.add("Date");
-        formEntryOrder.add("Forms Amount");
-        formEntryOrder.add("Author");
-        formEntryOrder.add("Line Separator");
+        add("Documents Title", StringValue.class);
+        add("Version", NumberValue.class);
+        add("Time", TimeValue.class);
+        add("Date", DateValue.class);
+        add("Forms Amount", NumberValue.class);
+        add("Author", StringValue.class);
+        add("Line Separator", EnumValue.class, LineEndingEnum.class);
     }
 
     @Override
@@ -39,6 +43,44 @@ public class DocumentsHeader extends Form {
         date = get(DateValue.class, formEntries.get("Date"));
         formsAmount = get(NumberValue.class, formEntries.get("Forms Amount"));
         author = get(StringValue.class, formEntries.get("Author"));
-        lineSeparator = get(StringValue.class, formEntries.get("Line Separator"));
+        lineSeparator = get(lineSeparatorFormEntry, formEntries.get("Line Separator"));
     }
+
+    public enum LineEndingEnum implements EnumValues {
+        LF("LF"),
+        CRLF("CRLF");
+
+        private final String value;
+
+        LineEndingEnum(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public ArrayList<String> getAcceptedValues() {
+            ArrayList<String> acceptedValues = new ArrayList<>();
+            for (LineEndingEnum expectedTypeEnum : LineEndingEnum.values()) {
+                acceptedValues.add(expectedTypeEnum.value);
+            }
+            return acceptedValues;
+        }
+
+        @Override
+        public <T extends EnumValues> T getEnumValueFrom(String otherValue, int lineNumber) throws BureaucraticError {
+            return (T) switch (otherValue) {
+                case "CRLF" -> LineEndingEnum.CRLF;
+                case "LF" -> LineEndingEnum.LF;
+                default -> throw new BureaucraticError(
+                        "Expected Type does not accept the following input given: \"" + otherValue + "\"",
+                        lineNumber
+                );
+            };
+        }
+    }
+
 }

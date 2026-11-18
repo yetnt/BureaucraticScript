@@ -38,7 +38,7 @@ public class Chars {
          * Comparison operators
          * <p>
          * The ! operator is listed here, because
-         * {@link Find#leastImportantOperator(String)} works on a character by character
+         * {@link com.yetnt.tokeniser.utils.Find#leastImportantOperator(String)} works on a character by character
          * basis. Therefore we can't actually just get 2 length operators immediately,
          * it will later add the next part of the operator when needed. Therefore,
          * {@code !} only exists, such that {@code !=} can also exist. If you don't get

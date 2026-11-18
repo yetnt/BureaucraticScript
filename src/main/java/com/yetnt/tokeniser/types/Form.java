@@ -4,10 +4,16 @@ import com.yetnt.errs.BureaucraticError;
 import com.yetnt.tokeniser.types.forms.*;
 import com.yetnt.tokeniser.types.values.*;
 import com.yetnt.tokeniser.types.values.base.*;
-import com.yetnt.utils.SamePair;
+import io.github.yetnt.utils.builders.SimpleJSON;
+import io.github.yetnt.utils.builders.ToJSON;
+import io.github.yetnt.utils.tuple.SamePair;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * The most, important class.
@@ -24,11 +30,17 @@ import java.util.HashMap;
  * @see FormType
  * @author Lehlogonolo Poole
  */
-public class Form {
+public class Form implements ToJSON<SimpleJSON, Exception> {
     protected final String title;
     protected FormType formType;
     protected final HashMap<String, FormEntry<?>> formEntries = new HashMap<>();
     protected final ArrayList<String> formEntryOrder = new ArrayList<>();
+    protected final HashMap<String, TypeRecord<?>> expectedTypeMap = new LinkedHashMap<>();
+
+    public record TypeRecord<T extends Enum<T> & EnumValues> (
+            @NotNull Class<? extends Any> expectedType,
+            @Nullable Class<T> enumClass
+    ) {}
 
     /**
      * Constructs a Form with the specified title and form type.
@@ -52,6 +64,8 @@ public class Form {
      *
      * @return An empty Form.
      */
+    @NotNull
+    @Contract(" -> new")
     public static Form empty() {
         return new Form("Empty Form", FormType.EMPTY);
     }
@@ -93,31 +107,41 @@ public class Form {
         return formType == FormType.EMPTY;
     }
 
+    protected <T extends Any> void add(String expectedEntryName, Class<T> expectedType) {
+        expectedTypeMap.put(expectedEntryName, new TypeRecord(expectedType, null));
+        formEntryOrder.add(expectedEntryName);
+    }
+
+    protected <T extends FormEntryValue<?>> void add(String expectedEntryName, Class<T> expectedType, Class<? extends Enum<?>> enumClass) {
+        expectedTypeMap.put(expectedEntryName, new TypeRecord((Class<? extends Any>) expectedType, enumClass));
+        formEntryOrder.add(expectedEntryName);
+    }
+
     /**
      * Adds a new entry to the form, performing validation based on the expected order and type.
      * If all expected entries have been added, the {@link #finish()} method is called.
      * @throws BureaucraticError if the number of entries exceeds expectations or if the key does not match the expected order.
      */
-    public void addEntry(ArrayList<String> ohterProcessedEntries, String key, FormEntryValue<?> value) throws BureaucraticError {
+    public void addEntry(ArrayList<String> otherProcessedEntries, String key, FormEntryValue<?> value) throws BureaucraticError {
         if (this.formType != FormType.PROCESS) this.formType = FormType.PROCESS;
-        if (ohterProcessedEntries.size() >= formEntryOrder.size()) {
+        if (otherProcessedEntries.size() >= formEntryOrder.size()) {
             // In this case, since we're adding one more to the entry, if there are more entries
             // than the form provides or its already equal, then it's too much.
-            throw new BureaucraticError("The form expects only (" + formEntryOrder.size() + ") entries. but was given (" + ohterProcessedEntries.size() + ")",
+            throw new BureaucraticError("The form expects only (" + formEntryOrder.size() + ") entries. but was given (" + otherProcessedEntries.size() + ")",
                     value.getLineNumber());
         }
         // We're trying to process an entry.
-        if (!formEntryOrder.get(ohterProcessedEntries.size()).equals(key.trim())) {
+        if (!formEntryOrder.get(otherProcessedEntries.size()).equals(key.trim())) {
             // Wrong key in the order.
             throw new BureaucraticError(
-                    "Form expected the key \"" + formEntryOrder.get(ohterProcessedEntries.size()) + "\" but got \"" + key + "\" instead.",
+                    "Form expected the key \"" + formEntryOrder.get(otherProcessedEntries.size()) + "\" but got \"" + key + "\" instead.",
                     value.getLineNumber()
             );
         }
 
         formEntries.put(key.trim(), new FormEntry<>(key.trim(), value));
 
-        if (ohterProcessedEntries.size() == formEntryOrder.size() - 1)
+        if (otherProcessedEntries.size() == formEntryOrder.size() - 1)
             // In this case, we've added the final thing we need. Parse it.
             finish();
 
@@ -139,14 +163,9 @@ public class Form {
      * @return An instance of the {@link Form} subclass corresponding to the given title.
      * @throws BureaucraticError if no form with the specified title is found.
      */
+    @NotNull
     public static Form toClassForm(String title, int lineNumber) throws BureaucraticError {
-        ArrayList<Form> allForms = new ArrayList<>() ;
-        allForms.add(new DocumentsHeader());
-        allForms.add(new LicenseForm());
-        allForms.add(new TestingForm());
-        allForms.add(new FunctionParamDefForm());
-        allForms.add(new ScopeRegistrationForm());
-        allForms.add(new ScopeAllocReqForm());
+        ArrayList<Form> allForms = getAllForms();
 
         for (Form form : allForms) {
             if (form.getTitle().equals(title)) {
@@ -158,6 +177,18 @@ public class Form {
                 "No Form with the title \"" + title + "\" was found.",
                 lineNumber
         );
+    }
+
+    @NotNull
+    public static ArrayList<Form> getAllForms() throws BureaucraticError {
+        ArrayList<Form> allForms = new ArrayList<>() ;
+        allForms.add(new DocumentsHeader());
+        allForms.add(new LicenseForm());
+        allForms.add(new TestingForm());
+        allForms.add(new FunctionParamDefForm());
+        allForms.add(new ScopeRegistrationForm());
+        allForms.add(new ScopeAllocReqForm());
+        return allForms;
     }
 
     /**
@@ -188,15 +219,49 @@ public class Form {
         SamePair<String> friendlyNames = getClassFriendlyNames(
                 expected, entry.getValue().getClass()
         );
+        if (IListValue.class.isAssignableFrom(expected))
+            return listValueGet(expected, entry, friendlyNames);
         if (expected != entry.getValue().getClass()) {
             throw new BureaucraticError(
-                    entry.getKey() + " expects a " + friendlyNames.first() + " but instead got a "
-                    + friendlyNames.second(),
+                    entry.getKey() + " expects a " + friendlyNames.getFirst() + " but instead got a "
+                    + friendlyNames.getSecond(),
                     entry.getValue().getLineNumber()
             );
         }
 
         return (T) entry.getValue();
+    }
+
+    @NotNull
+    private <T extends FormEntryValue<?>> T listValueGet(Class<T> expected, FormEntry<?> entry, SamePair<String> friendlyNames) throws BureaucraticError {
+
+        Object value = null;
+        if (expected == ReferenceListValue.class) {
+            if (entry.getValue() instanceof ReferToValue ref)
+                value = new ReferenceListValue(ref);
+            else if (entry.getValue() instanceof ReferenceListValue l)
+                value = l;
+        } else if (expected == StringListValue.class) {
+            if (entry.getValue() instanceof StringValue ref)
+                value = new StringListValue(ref);
+            else if (entry.getValue() instanceof StringListValue l)
+                value = l;
+        } else if (expected == AnyListValue.class) {
+            if (entry.getValue() instanceof Any ref)
+                value = new AnyListValue(ref);
+            else if (entry.getValue() instanceof AnyListValue l)
+                value = l;
+        }
+
+
+        if (value == null)
+            throw new BureaucraticError(
+                    entry.getKey() + " expects a " + friendlyNames.getFirst() + " but instead got a "
+                            + friendlyNames.getSecond(),
+                    entry.getValue().getLineNumber()
+            );
+
+        return (T) value;
     }
 
     /**
@@ -211,15 +276,15 @@ public class Form {
      */
     protected <R extends EnumValues> EnumValue<R> get(
             FormEntry<EnumValue<R>> enumValueInstance,
-            FormEntry<?> entry) throws BureaucraticError {
+            @NotNull FormEntry<?> entry) throws BureaucraticError {
         Class<StringValue> expected = StringValue.class;
         SamePair<String> friendlyNames = getClassFriendlyNames(
                 expected, entry.getValue().getClass()
         );
         if (expected != entry.getValue().getClass()) {
             throw new BureaucraticError(
-                    entry.getKey() + " expects a " + friendlyNames.first() + " but instead got a "
-                            + friendlyNames.second(),
+                    entry.getKey() + " expects a " + friendlyNames.getFirst() + " but instead got a "
+                            + friendlyNames.getSecond(),
                     entry.getValue().getLineNumber()
             );
         }
@@ -231,26 +296,24 @@ public class Form {
     /**
      * Retrieves an {@link EnumListValue} from a {@link FormEntry}.
      * This method expects the entry's value to be a {@link StringListValue} and attempts to convert it
-     * into the specified {@link EnumListValue}. The boolean parameter {@code t} is unused and can be removed.
+     * into the specified {@link EnumListValue}.
      * @param enumListValueInstance An instance of {@link FormEntry} containing the {@link EnumListValue} to populate.
      * @param entry The {@link FormEntry} from which to extract the string list value.
-     * @param t An unused boolean parameter. (Avoid type erasure with {@link #get(Class, FormEntry)}
      * @param <R> The type of the enum.
      * @return The populated {@link EnumListValue}.
      * @throws BureaucraticError if the entry's value is not a {@link StringListValue} or if the conversion fails.
      */
-    protected <R extends EnumValues> EnumListValue<R> get(
+    protected <R extends EnumValues> EnumListValue<R> getList(
             FormEntry<EnumListValue<R>> enumListValueInstance,
-            FormEntry<?> entry,
-            boolean t) throws BureaucraticError {
+            @NotNull FormEntry<?> entry) throws BureaucraticError {
         Class<StringListValue> expected = StringListValue.class;
         SamePair<String> friendlyNames = getClassFriendlyNames(
                 expected, entry.getValue().getClass()
         );
         if (expected != entry.getValue().getClass()) {
             throw new BureaucraticError(
-                    entry.getKey() + " expects a " + friendlyNames.first() + " but instead got a "
-                            + friendlyNames.second(),
+                    entry.getKey() + " expects a " + friendlyNames.getFirst() + " but instead got a "
+                            + friendlyNames.getSecond(),
                     entry.getValue().getLineNumber()
             );
         }
@@ -268,7 +331,7 @@ public class Form {
      * @return The value of the {@link FormEntry}, cast to {@link Object}.
      * @throws BureaucraticError if the actual type of the entry's value does not match the expected type.
      */
-    public Object getUntyped(Class<?> expected, FormEntry<?> entry) throws BureaucraticError {
+    public Object getUntyped(@NotNull Class<?> expected, @NotNull FormEntry<?> entry) throws BureaucraticError {
         String expectedFriendlyName = expected.getAnnotation(BureaucraticType.class).friendlyName();
         String actualFriendlyName = entry.getValue().getClass().getAnnotation(BureaucraticType.class).friendlyName();
 
@@ -285,5 +348,29 @@ public class Form {
         }
 
         return entry.getValue();
+    }
+
+    @Override
+    public SimpleJSON toJson() throws Exception {
+        SimpleJSON thisJson = new SimpleJSON();
+        thisJson.set("title", title);
+//        thisJson.set("type", formType.name()); All forms will be PRCESSING since nothing is populated.
+        ArrayList<SimpleJSON> values = new ArrayList<>();
+        thisJson.set("expectedEntries", values);
+        expectedTypeMap.forEach((s, i) -> {
+            SimpleJSON entry = new SimpleJSON();
+            SimpleJSON type = new SimpleJSON();
+            entry.set("name", s);
+            entry.set("type", type);
+            type.set("value", i.expectedType.getAnnotation(BureaucraticType.class).friendlyName());
+            if (i.enumClass != null)
+                type.set("enum", getAcceptedValues(i.enumClass));
+            values.add(entry);
+        });
+        return thisJson;
+    }
+
+    public static <T extends Enum<T> & EnumValues> ArrayList<String> getAcceptedValues(@NotNull Class<T> enumClass) {
+        return enumClass.getEnumConstants()[0].getAcceptedValues();
     }
 }

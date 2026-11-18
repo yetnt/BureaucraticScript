@@ -25,7 +25,7 @@ import com.yetnt.tokeniser.types.values.*;
  * @see ILookUpValue
  * @author Lehlogonolo Poole
  */
-public class FormEntryValue<T> {
+public class FormEntryValue<T> implements Any {
     protected T value;
     protected int lineNumber;
 

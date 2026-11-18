@@ -21,11 +21,11 @@ public class LicenseForm extends Form {
 
     public LicenseForm() throws BureaucraticError {
         super("License", FormType.PROCESS);
-        formEntryOrder.add("Form Title");
-        formEntryOrder.add("License Type");
-        formEntryOrder.add("License Properties");
-        formEntryOrder.add("License Year");
-        formEntryOrder.add("Renewal Year");
+        add("Form Title", StringValue.class);
+        add("License Type",  EnumValue.class, LicenseTypeEnum.class);
+        add("License Properties", EnumListValue.class, LicensePropertiesEnum.class);
+        add("License Year", DateValue.class);
+        add("Renewal Year", DateValue.class);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class LicenseForm extends Form {
         this.formType = FormType.LICENSE;
         formTitle = get(StringValue.class, formEntries.get("Form Title"));
         licenseType = get(licenseTypeFormEntry, formEntries.get("License Type"));
-        licenseProperties = get(licensePropertiesFormEntry, formEntries.get("License Properties"), true);
+        licenseProperties = getList(licensePropertiesFormEntry, formEntries.get("License Properties"));
         licenseYear = get(DateValue.class, formEntries.get("License Year"));
         renewalYear = get(DateValue.class, formEntries.get("Renewal Year"));
     }

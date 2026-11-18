@@ -8,6 +8,7 @@ import com.yetnt.tokeniser.types.values.EnumValue;
 import com.yetnt.tokeniser.types.values.ReferToValue;
 import com.yetnt.tokeniser.types.values.StringValue;
 import com.yetnt.tokeniser.types.values.base.EnumValues;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -25,11 +26,11 @@ public class ScopeRegistrationForm extends Form {
 
     public ScopeRegistrationForm() {
         super("Scope Registration Request", FormType.PROCESS);
-        formEntryOrder.add("Form Title");
-        formEntryOrder.add("Scoping Authority");
-        formEntryOrder.add("Scope Author");
-        formEntryOrder.add("Execution");
-        formEntryOrder.add("Safety");
+        add("Form Title", StringValue.class);
+        add("Scoping Authority",  ReferToValue.class);
+        add("Scope Author", StringValue.class);
+        add("Execution", EnumValue.class, ExecutionEnum.class);
+        add("Safety", EnumValue.class, SafetyEnum.class);
     }
 
     @Override
@@ -95,6 +96,7 @@ public class ScopeRegistrationForm extends Form {
             return value;
         }
 
+        @NotNull
         @Override
         public ArrayList<String> getAcceptedValues() {
             ArrayList<String> acceptedValues = new ArrayList<>();
@@ -105,7 +107,7 @@ public class ScopeRegistrationForm extends Form {
         }
 
         @Override
-        public <T extends EnumValues> T getEnumValueFrom(String otherValue, int lineNumber) throws BureaucraticError {
+        public <T extends EnumValues> T getEnumValueFrom(@NotNull String otherValue, int lineNumber) throws BureaucraticError {
             return (T) switch (otherValue) {
                 case "Unsafe" -> SafetyEnum.UNSAFE;
                 case "Guaranteed" -> SafetyEnum.SAFE;

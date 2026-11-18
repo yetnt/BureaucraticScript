@@ -1,7 +1,7 @@
 package com.yetnt.tokeniser.utils;
 
 import com.yetnt.lang.Chars;
-import com.yetnt.utils.SamePair;
+import io.github.yetnt.utils.tuple.SamePair;
 
 import java.util.ArrayList;
 
@@ -61,7 +61,7 @@ public class Validate {
     public static int isOpInPair(int index, ArrayList<SamePair<Integer>> list) {
         for (int i = 0; i < list.size(); i++) {
             SamePair<Integer> tuple2 = list.get(i);
-            if (index > tuple2.first() && index < tuple2.second())
+            if (index > tuple2.getFirst() && index < tuple2.getSecond())
                 return i;
 
         }

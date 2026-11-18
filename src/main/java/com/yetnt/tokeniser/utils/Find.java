@@ -1,8 +1,10 @@
 package com.yetnt.tokeniser.utils;
 
 import com.yetnt.lang.Chars;
-import com.yetnt.utils.Pair;
-import com.yetnt.utils.SamePair;
+import io.github.yetnt.utils.tuple.Pair;
+import io.github.yetnt.utils.tuple.SamePair;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +12,8 @@ import java.util.List;
 
 public class Find {
 
-    public static String[] splitByAmount(String line, String separator, int amount) {
+    @NotNull
+    public static String[] splitByAmount(@NotNull String line, String separator, int amount) {
         String[] arr = new String[amount];
         String[] split = line.split(separator);
 
@@ -225,7 +228,7 @@ public class Find {
         Pair<String, Integer> fTuple2 = indexes2.getLast();
 
         return new LeastImportantOperator(
-                fTuple2.first(), fTuple2.second(),
+                fTuple2.getFirst(), fTuple2.getSecond(),
                 group);
     }
 
@@ -237,7 +240,8 @@ public class Find {
      * @param line The string to search for quotation mark pairs.
      * @return An {@link ArrayList} of {@link SamePair} where each pair represents the start and end index of a quotation block.
      */
-    public static ArrayList<SamePair<Integer>> quotationPairs(String line) {
+    @NotNull
+    public static ArrayList<SamePair<Integer>> quotationPairs(@NotNull String line) {
         ArrayList<SamePair<Integer>> arr = new ArrayList<>();
         int oldCharIndex = -1;
 
@@ -266,7 +270,9 @@ public class Find {
      * @return A {@link BracePairs} instance containing a {@link Pair} with an {@link ArrayList} of {@link SamePair} for closed brace pairs (start and end index),
      *         and an {@link ArrayList} of {@link Pair} for unclosed braces (index and character).
      */
-    public static BracePairs bracePairs(String line) {
+    @NotNull
+    @Contract("_ -> new")
+    public static BracePairs bracePairs(@NotNull String line) {
         ArrayList<SamePair<Integer>> finalArr = new ArrayList<>();
         ArrayList<Pair<Integer, Character>> stack = new ArrayList<>();
 
@@ -278,8 +284,8 @@ public class Find {
 
             if ((c == ']' || c == ')') /*&& Validate.isOpInQuotePair(line, i) == -1*/) {
                 Pair<Integer, Character> t = stack.getLast();
-                if (t.second() == '[' && c == ']' || t.second() == '(' && c == ')') {
-                    finalArr.add(new SamePair<>(t.first(), i));
+                if (t.getSecond() == '[' && c == ']' || t.getSecond() == '(' && c == ')') {
+                    finalArr.add(new SamePair<>(t.getFirst(), i));
                     stack.removeLast();
                 }
             }
@@ -351,7 +357,7 @@ public class Find {
      * @param line Input.
      * @return the index where the outermost brace pair starts
      */
-    public static int lastOutermostBracePair(String line) {
+    public static int lastOutermostBracePair(@NotNull String line) {
         ArrayList<Integer> indexes = new ArrayList<>();
         int depth = 0;
         for (int i = 0; i < line.length(); i++) {

@@ -10,9 +10,9 @@ import com.yetnt.tokeniser.types.values.StringValue;
 public class ScopeAllocReqForm extends Form {
     public ScopeAllocReqForm() {
         super("Scope Allocation Request", FormType.PROCESS);
-        formEntryOrder.add("Form Title");
-        formEntryOrder.add("Scoping Authority");
-        formEntryOrder.add("Amount");
+        add("Form Title",  StringValue.class);
+        add("Scoping Authority", ReferToValue.class);
+        add("Amount", NumberValue.class);
     }
 
     public StringValue formTitle;
